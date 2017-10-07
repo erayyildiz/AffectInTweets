@@ -2,9 +2,10 @@ import logging
 import word2vecReaderUtils as utils
 from numpy import exp, dot, zeros, outer, random, dtype, float32 as REAL,\
     uint32, seterr, array, uint8, vstack, argsort, fromstring, sqrt, newaxis,\
-    ndarray, empty, sum as np_sum, prod
+    ndarray, empty, sum as np_sum, prod, array2string
 from six import string_types
 from gensim import matutils
+import sys
 
 class Vocab(object):
     """A single vocabulary item, used internally for constructing binary trees (incl. both word leaves and inner nodes)."""
@@ -89,7 +90,8 @@ class Word2Vec:
             self.train(sentences)
             
     @classmethod
-    def load_word2vec_format(cls, fname, fvocab=None, binary=False, norm_only=True):
+    def load_word2vec_format(cls, fname, fvocab=None, binary=False, norm_only=True, word2id=None):
+        res = {}
         """
         Load the input-hidden weight matrix from the original C word2vec-tool format.
 
@@ -110,13 +112,12 @@ class Word2Vec:
                 for line in fin:
                     word, count = utils.to_unicode(line).strip().split()
                     counts[word] = int(count)
-
         #logger.info("loading projection weights from %s" % (fname))
         with utils.smart_open(fname) as fin:
             header = utils.to_unicode(fin.readline())
             vocab_size, layer1_size = map(int, header.split())  # throws for invalid file format
-            result = Word2Vec(size=layer1_size)
-            result.syn0 = zeros((vocab_size, layer1_size), dtype=REAL)
+            #result = Word2Vec(size=layer1_size)
+            #result.syn0 = zeros((vocab_size, layer1_size), dtype=REAL)
             if binary:
                 binary_len = dtype(REAL).itemsize * layer1_size
                 for line_no in xrange(vocab_size):
@@ -128,17 +129,24 @@ class Word2Vec:
                             break
                         if ch != b'\n':  # ignore newlines in front of words (some binary files have newline, some don't)
                             word.append(ch)
-                    word = utils.to_unicode(b''.join(word),encoding='latin-1')
+                    word = utils.to_unicode(b''.join(word), encoding='latin-1')
 
-                    if counts is None:
-                        result.vocab[word] = Vocab(index=line_no, count=vocab_size - line_no)
-                    elif word in counts:
-                        result.vocab[word] = Vocab(index=line_no, count=counts[word])
-                    else:
+                    #if counts is None:
+                    #    result.vocab[word] = Vocab(index=line_no, count=vocab_size - line_no)
+                    #elif word in counts:
+                    #    result.vocab[word] = Vocab(index=line_no, count=counts[word])
+                    #else:
                         #logger.warning("vocabulary file is incomplete")
-                        result.vocab[word] = Vocab(index=line_no, count=None)
-                    result.index2word.append(word)
-                    result.syn0[line_no] = fromstring(fin.read(binary_len), dtype=REAL)
+                        #result.vocab[word] = Vocab(index=line_no, count=None)
+                    vec = fromstring(fin.read(binary_len), dtype=REAL)
+                    if word in word2id:
+                        sys.stdout.write("\r%d / %d      " % (len(res), len(word2id)))
+                        if len(res) % 100 == 0:
+                            sys.stdout.flush()
+                        res[word] = vec
+
+                    #result.index2word.append(word)
+                    #result.syn0[line_no] = fromstring(fin.read(binary_len), dtype=REAL)
             else:
                 for line_no, line in enumerate(fin):
                     parts = utils.to_unicode(line).split()
@@ -155,8 +163,9 @@ class Word2Vec:
                     result.index2word.append(word)
                     result.syn0[line_no] = weights
         #logger.info("loaded %s matrix from %s" % (result.syn0.shape, fname))
-        result.init_sims(norm_only)
-        return result
+        #result.init_sims(norm_only)
+        #return result
+        return res
     
     def init_sims(self, replace=False):
         """
@@ -189,7 +198,6 @@ class Word2Vec:
         return word in self.vocab
 
     def most_similar(self, positive=[], negative=[], topn=10):
-
 
         if isinstance(positive, string_types) and not negative:
             # allow calls like most_similar('dog'), as a shorthand for most_similar(['dog'])
