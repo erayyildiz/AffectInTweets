@@ -137,7 +137,7 @@ def copytree_hardlink(source, dest):
         shutil.copy2 = copy2
 
 
-def tokenize(text, lowercase=False, deacc=False, errors="strict", to_lower=False, lower=False):
+def tokenize(text, lowercase=False, deacc=False, errors="ignore", to_lower=False, lower=False):
     """
     Iteratively yield tokens as unicode strings, optionally also lowercasing them
     and removing accent marks.

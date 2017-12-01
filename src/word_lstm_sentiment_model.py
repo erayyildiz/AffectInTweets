@@ -25,7 +25,7 @@ def build_model(embedding_dim, max_word_count, embedding_matrix, max_sequence_le
     sequence_input = Input(shape=(max_sequence_length,), dtype='int32')
     embedded_sequences = embedding_layer(sequence_input)
     embedded_sequences = Dropout(0.2)(embedded_sequences)
-    lstm_out = wrappers.Bidirectional(LSTM(LSTM_OUTPUT_LENGTH, return_sequences=False))(embedded_sequences)
+    lstm_out = wrappers.Bidirectional(LSTM(embedding_dim, return_sequences=False))(embedded_sequences)
     lstm_out = Dropout(0.2)(lstm_out)
     output = Dense(2, activation='softmax')(lstm_out)
     model = Model(input=[sequence_input], output=output)
@@ -38,11 +38,17 @@ def save_model(model, word2id, path='resources/saved_models/model'):
         pickle.dump(word2id, pickle_file)
 
 
-def load_model(model, path='resources/saved_models/model'):
-    model.load_weights(path + '.weights')
-    with open(path + '.word2id', 'rb') as pickle_file:
+def load_model(model_path='resources/saved_models/model.weights',
+               embedding_matrix_path='resources/sentiment_model_embedding.matrix',
+               word2id_path='resources/sentiment_model_word2id.dic'):
+    if embedding_matrix_path:
+        with open(embedding_matrix_path, 'rb') as pickle_file:
+            embedding_matrix = pickle.load(pickle_file)
+    with open(word2id_path, 'rb') as pickle_file:
         word2id = pickle.load(pickle_file)
-    return model, word2id
+    model = build_model(EMBEDDING_DIM, len(word2id), embedding_matrix, MAX_SEQUENCE_LENGTH)
+    model.load_weights(model_path)
+    return model, word2id, embedding_matrix
 
 
 def train(model, word2id, x_train, y_train, x_dev, y_dev, batch_size=32):
@@ -71,23 +77,37 @@ def create_embedding_matrix(word2id, w2vModel, embedding_dim):
 if __name__ == "__main__":
 
     #TRAIN AND SAVE SENTIMENT MODEL
+
+
+    #word2vec = Word2Vec.load_word2vec_format("resources/word2vec_twitter_model.bin", binary=True, word2id=word2id)
+    #with open("resources/twitter_word2vec.dic", 'wb') as pickle_file:
+    #    pickle.dump(word2vec, pickle_file)
+    #embedding_matrix = create_embedding_matrix(word2id, word2vec, EMBEDDING_DIM)
+    #with open("resources/sentiment_model_embedding.matrix", 'wb') as pickle_file:
+    #    pickle.dump(embedding_matrix, pickle_file)
+    #with open("resources/sentiment_model_word2id.dic", 'wb') as pickle_file:
+    #    pickle.dump(word2id, pickle_file)
+
+    word2id = pickle.load(open("resources/sentiment_model_word2id.dic"))
     print('Loading data...')
-    x, y, word2id = data_utils.load_sentiment_data(TRAIN_FILE_PATH, frac=1)
+    x, y, _word2id = data_utils.load_sentiment_data(TRAIN_FILE_PATH, frac=1, add_unknowns=False, word2id=word2id)
     train_size = int(math.floor(0.9 * len(x)))
     x_train = x[:train_size]
     x_dev = x[train_size:]
     y_train = y[:train_size]
     y_dev = y[train_size:]
     print(len(x_train), 'train sequences')
-    print(len(x_dev), 'test sequences')
+    print(len(x_dev), 'dev sequences')
     print('Pad sequences (samples x time)')
     x_train = sequence.pad_sequences(x_train, maxlen=MAX_SEQUENCE_LENGTH)
     x_dev = sequence.pad_sequences(x_dev, maxlen=MAX_SEQUENCE_LENGTH)
     print('x_train shape:', x_train.shape)
     print('x_dev shape:', x_dev.shape)
-    word2vec = Word2Vec.load_word2vec_format("resources/word2vec_twitter_model.bin", binary=True, word2id=word2id)
-    pickle.dump(word2vec, "resources/twitter_word2vec.dic")
-    embedding_matrix = create_embedding_matrix(word2id, word2vec, EMBEDDING_DIM)
-    model = build_model(EMBEDDING_DIM, len(word2id), embedding_matrix, MAX_SEQUENCE_LENGTH)
-    train(model, word2id, x_train, y_train, x_dev, y_dev, batch_size=8)
+    model, _, _ = load_model()
+    model.compile(loss='categorical_crossentropy',
+                  optimizer='adam',
+                  metrics=['accuracy'])
+    print model.evaluate(x_dev, y_dev)
+
+    #train(model, word2id, x_train, y_train, x_dev, y_dev, batch_size=8)
 
