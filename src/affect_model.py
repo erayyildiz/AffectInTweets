@@ -62,9 +62,7 @@ def create_prediction_model(neural_features_len, lexicon_features_len, num_class
 
 
     prediction_model.compile(loss={"regression_output": "mean_squared_error",
-                                   "classification_output": "categorical_crossentropy"},
-                  optimizer='adam',
-                  metrics={"regression_output": pearson_correlation_f, "classification_output": 'accuracy'})
+                                   "classification_output": "categorical_crossentropy"}, optimizer='adam')
     return prediction_model
 
 
@@ -97,6 +95,12 @@ def pearson_correlation_f(y_true, y_pred):
     # dev shape: (1,10)
 
     return K.sum(K.mean(fsp * fst, axis=0) / (devP * devT))
+
+
+def pearson_correlation(y_true, y_pred):
+    l1 = list(y_true)
+    l2 = [p[0] for p in y_pred]
+    return np.corrcoef(l1, l2)[0, 1]
 
 
 def encode(arr, word2id):
@@ -168,6 +172,8 @@ def train_model(name, regression_train_data_path, classification_train_data_path
                   epochs=100, callbacks=[early_stop], batch_size=1)
     else:
         raise Exception("You must use one of the feature sets at least!")
+    predictions = model.predict([neural_fetures_dev, lexicon_features_dev])
+    print "pearson correlation={}".format(pearson_correlation(dev_y_scores, predictions[0]))
     print "Saving {} model ...".format(name)
     model.save("resources/saved_models/{}.model".format(name))
 
@@ -177,7 +183,7 @@ if __name__ == "__main__":
     feature_extraction_model, word_index = create_feature_extraction_model()
     # feature_extraction_model = None
     # word_index = None
-    train_model("joy_en", "data/semeval2018 task 1/EI-reg-en_joy_train.txt", "data/semeval2018 task 1/EI-oc-En-joy-train.txt",
+    train_model("joy_en", "data/semeval2018 task 1/EI-reg-En-joy-train.txt", "data/semeval2018 task 1/EI-oc-En-joy-train.txt",
                 "data/semeval2018 task 1/2018-EI-reg-En-joy-dev.txt", "data/semeval2018 task 1/2018-EI-oc-En-joy-dev.txt",
                 word_index, use_neural_features=True, use_lexicon_features=True,
                 feature_extraction_model=feature_extraction_model)

@@ -19,7 +19,9 @@ class LexiconFeatureExtractor:
         # AFINN Lexicons
         res.append(LexiconFeatureExtractor.calculate_score_word_based(self.afinn_lexicon, input_txt))
         res.append(LexiconFeatureExtractor.calculate_score_word_based(self.afinn_emoticon_lexicon, input_txt))
+        # BING LIU Lexicon
         res.append(LexiconFeatureExtractor.calculate_score_word_based(self.bingliu_lexicon, input_txt))
+        # MPQA Lexicon
         res.append(LexiconFeatureExtractor.calculate_score_word_based(self.mpqa_lexicon, input_txt))
         return res
 

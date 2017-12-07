@@ -49,7 +49,10 @@ def load_affect_data(file_path, is_label_numeric=True, label_index=3, text_index
     x = []
     y = []
     with open(file_path, "r") as f:
-        for line in f:
+        for i, line in enumerate(f):
+            if i == 0:
+                # Headers
+                continue
             columns = line.split("\t")
             if len(columns) > label_index and columns[label_index]:
                 if is_label_numeric:
@@ -62,8 +65,8 @@ def load_affect_data(file_path, is_label_numeric=True, label_index=3, text_index
                         continue
                 else:
                     label = columns[label_index].split(":")[0]
-                    val = float(label)
-                    y.append(val-1)
+                    val = int(label)
+                    y.append(val)
                     x.append(columns[text_index].strip("\r\n\t "))
     return x, y
 
