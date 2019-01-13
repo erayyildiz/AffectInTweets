@@ -20,14 +20,14 @@ A simple user interface is provided to try the models. Follow the instructions b
 ![screenshot](../master/resources/assets/Capture2.PNG?raw=true)
 
 # Experimental Results
+* Performance comparisons of the models in terms of Pearson Corelation *
 
-| Method | Joy |  | Öfke |  | Üzüntü |  | Korku |  | Valans |  |
-|--------------------------------------------------------|-------------------------|--------------------|-------------------------|--------------------|-------------------------|--------------------|-------------------------|--------------------|-------------------------|--------------------|
-|  | Classification Accuracy | Pearson Corelation | Classification Accuracy | Pearson Corelation | Classification Accuracy | Pearson Corelation | Classification Accuracy | Pearson Corelation | Classification Accuracy | Pearson Corelation |
-| Bidirectional LSTM | 41.3 | 0.49 | 42.01 | 0.35 | 40.8 | 0.47 | 60.41 | 0.49 | 31.84 | 0.32 |
-| Bidirectional LSTM + Lexicon Features | 43.1 | 0.54 | 45.61 | 0.43 | 47.6 | 0.47 | 63.75 | 0.55 | 36.3 | 0.51 |
-| Bidirectional LSTM with pretraining | 42.06 | 0.62 | 46.9 | 0.48 | 49.87 | 0.63 | 64.26 | 0.58 | 38.53 | 0.68 |
-| Bidirectional LSTM with pretraining + Lexicon Features | 43.1 | 0.6 | 46.9 | 0.5 | 52.64 | 0.64 | 66.06 | 0.55 | 40.31 | 0.71 |
+| **Method** | **Joy** | **Anger** | **Sadness** | **Fear** | **Valence** |
+|--------------------------------------------------------|------|-------|---------|------|---------|
+| Bidirectional LSTM | 0.49 | 0.35 | 0.47 | 0.49 | 0.32 |
+| Bidirectional LSTM + Lexicon Features | 0.54 | 0.43 | 0.47 | 0.55 | 0.51 |
+| Bidirectional LSTM with pretraining | **0.62** | 0.48 | 0.63 | **0.58** | 0.68 |
+| Bidirectional LSTM with pretraining + Lexicon Features | 0.6 | **0.5** | **0.64** | 0.55 | **0.71** |
 
 ## System Requirements
 You should run the system on a machine where ptyhon-2.7 has been installed.
