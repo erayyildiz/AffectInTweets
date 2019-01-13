@@ -3,21 +3,31 @@ Finding the intensity of emotions in tweets (SemEval 2018 Task 1 Participant)
 
 ## Introduction
 
-Existing emotional analysis tools generally classify a given text into predefined emotion categories (positive, negative, or angry, cheerful, sad, etc.).
+Existing emotion analysis tools generally classify a given text into predefined emotion categories (positive, negative, or angry, cheerful, sad, etc.).
 However, knowing the intensity of emotion expressed in a given text would be useful for many applications such as brand and product perception tracking.
-In this study, a system was developed to measure the intensity of emotion in tweets by using shared datasets in the workshop named sistem Emotional Intensity in Tweets geliştiril which will take place in SemEval 2018 - Task 1.
-In the data set there are anonymous tweets and affective intensities between 0 and 1 determined by people for each emotion (anger, fear, fun and sadness).
-In this study, a model using bi-directional LSTM networks, which provides highly successful results in natural language processing tasks on shared datasets, is also examined in this study.
-The results show that there is a significant increase in the success achieved when using the outputs of a model with a large data-driven model for emotional analysis along with lexical attributes.
-This study indicates that the pre-educated neural networks, which are frequently used in the field of computerized vision, have a bright future in the field of natural language processing.
+In this study, a system was developed to measure the intensity of emotion in tweets by using shared datasets in the workshop named  Affects in Tweets took place in SemEval 2018 - Task 1.
 
-A simpler user interface is provided to try the models. Follow the instructions below to run web based application.
+In the data set there are anonymous tweets and affective intensities between 0 and 1 determined by annotators for each emotion (anger, fear, fun and sadness).
+In this study, a model based on bidirectional LSTM networks, which provides highly successful results in natural language processing tasks is examined for finding emotion intensities of tweets.
+The results show that there is a significant increase in the performance when LSTM based model initialized with a pretrained model which is trained on a sentiment140 dataset and lexicon based features extracted from emoton lexicons are also utilized.
+
+A simple user interface is provided to try the models. Follow the instructions below to run web based application.
 
 *A screenshot from the application*
 
 ![screenshot](../master/resources/assets/Capture1.PNG?raw=true)
 
 ![screenshot](../master/resources/assets/Capture2.PNG?raw=true)
+
+# Experimental Results
+
+| Method | Joy |  | Öfke |  | Üzüntü |  | Korku |  | Valans |  |
+|--------------------------------------------------------|-------------------------|--------------------|-------------------------|--------------------|-------------------------|--------------------|-------------------------|--------------------|-------------------------|--------------------|
+|  | Classification Accuracy | Pearson Corelation | Classification Accuracy | Pearson Corelation | Classification Accuracy | Pearson Corelation | Classification Accuracy | Pearson Corelation | Classification Accuracy | Pearson Corelation |
+| Bidirectional LSTM | 41.3 | 0.49 | 42.01 | 0.35 | 40.8 | 0.47 | 60.41 | 0.49 | 31.84 | 0.32 |
+| Bidirectional LSTM + Lexicon Features | 43.1 | 0.54 | 45.61 | 0.43 | 47.6 | 0.47 | 63.75 | 0.55 | 36.3 | 0.51 |
+| Bidirectional LSTM with pretraining | 42.06 | 0.62 | 46.9 | 0.48 | 49.87 | 0.63 | 64.26 | 0.58 | 38.53 | 0.68 |
+| Bidirectional LSTM with pretraining + Lexicon Features | 43.1 | 0.6 | 46.9 | 0.5 | 52.64 | 0.64 | 66.06 | 0.55 | 40.31 | 0.71 |
 
 ## System Requirements
 You should run the system on a machine where ptyhon-2.7 has been installed.
