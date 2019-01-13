@@ -11,6 +11,14 @@ In this study, a model using bi-directional LSTM networks, which provides highly
 The results show that there is a significant increase in the success achieved when using the outputs of a model with a large data-driven model for emotional analysis along with lexical attributes.
 This study indicates that the pre-educated neural networks, which are frequently used in the field of computerized vision, have a bright future in the field of natural language processing.
 
+A simpler user interface is provided to try the models. Follow the instructions below to run web based application.
+
+*A screenshot from the application*
+
+![screenshot](../master/resources/assets/Capture1.PNG?raw=true)
+
+![screenshot](../master/resources/assets/Capture2.PNG?raw=true)
+
 ## System Requirements
 You should run the system on a machine where ptyhon-2.7 has been installed.
 The following packages are required to run the system.
