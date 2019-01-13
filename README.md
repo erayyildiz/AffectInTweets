@@ -1,7 +1,17 @@
 # AffectInTweets
-Find the intensity of affects in tweets (SemEval 2018 Task 1 Participant)
+Finding the intensity of emotions in tweets (SemEval 2018 Task 1 Participant)
 
-# System Requirements
+## Introduction
+
+Existing emotional analysis tools generally classify a given text into predefined emotion categories (positive, negative, or angry, cheerful, sad, etc.).
+However, knowing the intensity of emotion expressed in a given text would be useful for many applications such as brand and product perception tracking.
+In this study, a system was developed to measure the intensity of emotion in tweets by using shared datasets in the workshop named sistem Emotional Intensity in Tweets geliştiril which will take place in SemEval 2018 - Task 1.
+In the data set there are anonymous tweets and affective intensities between 0 and 1 determined by people for each emotion (anger, fear, fun and sadness).
+In this study, a model using bi-directional LSTM networks, which provides highly successful results in natural language processing tasks on shared datasets, is also examined in this study.
+The results show that there is a significant increase in the success achieved when using the outputs of a model with a large data-driven model for emotional analysis along with lexical attributes.
+This study indicates that the pre-educated neural networks, which are frequently used in the field of computerized vision, have a bright future in the field of natural language processing.
+
+## System Requirements
 You should run the system on a machine where ptyhon-2.7 has been installed.
 The following packages are required to run the system.
 ```
@@ -14,7 +24,7 @@ keras==2.0.6
 tornado==4.5.1
 ```
 
-# Running the program
+## Running the program
 The program has a web based user interface. 
 You can run the web application just running the following command:
 ```
