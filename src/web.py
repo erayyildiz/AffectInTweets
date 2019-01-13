@@ -5,7 +5,7 @@ from tornado import web
 from affect_predictor import AffectPredictor
 
 
-class StaticGlovbalObjects:
+class StaticGlobalObjects:
     AFFECT_PREDICTOR = AffectPredictor()
 
     def __init__(self):
@@ -22,7 +22,7 @@ class TweetHandler(tornado.web.RequestHandler):
 
     def get(self):
         tweet = self.get_argument("tweet")
-        results = StaticGlovbalObjects.AFFECT_PREDICTOR.predict(tweet)
+        results = StaticGlobalObjects.AFFECT_PREDICTOR.predict(tweet)
         self.render("template.html", results=results,
                     class_dic=TweetHandler.CSS_CLASS_DIC,
                     tweet=tweet)

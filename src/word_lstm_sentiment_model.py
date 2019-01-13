@@ -2,8 +2,7 @@ from keras.models import Model
 from keras.layers import Embedding, wrappers, LSTM, Dense, Dropout
 from keras.layers import Input
 from keras.preprocessing import sequence
-import cPickle as pickle
-from word2vecReader import Word2Vec
+import pickle
 import data_utils
 import math
 import numpy as np
@@ -66,7 +65,7 @@ def train(model, word2id, x_train, y_train, x_dev, y_dev, batch_size=32):
 
 def create_embedding_matrix(word2id, w2vModel, embedding_dim):
     embedding_matrix = np.zeros((len(word2id) + 1, embedding_dim))
-    for word, i in word2id.iteritems():
+    for word, i in word2id.items():
         if word in w2vModel:
             embedding_matrix[i] = w2vModel[word]
         else:
@@ -107,7 +106,5 @@ if __name__ == "__main__":
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy'])
-    print model.evaluate(x_dev, y_dev)
-
-    #train(model, word2id, x_train, y_train, x_dev, y_dev, batch_size=8)
+    print(model.evaluate(x_dev, y_dev))
 

@@ -1,8 +1,27 @@
 import pandas
 import sys
+
+import re
 from keras.utils.np_utils import to_categorical
-import word2vecReaderUtils
 from nltk.tokenize import TweetTokenizer
+
+
+ALPHABETIC_REG = re.compile('(((?![\d])\w)+)', re.UNICODE)
+
+
+def to_unicode(text, encoding='utf8', errors='ignore'):
+    """Convert a string (bytestring in `encoding` or unicode), to unicode."""
+    if isinstance(text, str):
+        return text
+    return str(text, encoding, errors=errors)
+
+
+def tokenize(text, lowercase=False):
+    text = to_unicode(text, errors=errors)
+    if lowercase:
+        text = text.lower()
+    for match in ALPHABETIC_REG.finditer(text):
+        yield match.group()
 
 
 def ddict2dict(d):
@@ -23,7 +42,7 @@ def load_sentiment_data(file_path, frac=1, word2id={}, add_unknowns=True):
     df = df[['x', 'y']]
     for i, row in enumerate(df.iterrows()):
         sys.stdout.write("\r%d / %d      " % (i, instance_count))
-        tokens = word2vecReaderUtils.tokenize(row[1]['x'])
+        tokens = tokenize(row[1]['x'])
         for token in tokens:
             if token in wordcounts:
                 wordcounts[token] += 1
@@ -60,7 +79,6 @@ def load_affect_data(file_path, is_label_numeric=True, label_index=3, text_index
                         y.append(val)
                         x.append(columns[text_index].strip("\r\n\t "))
                     except ValueError:
-                        print columns[label_index]
                         continue
                 else:
                     label = columns[label_index].split(":")[0]
@@ -98,6 +116,7 @@ def encode_sentence(sentence, word2id, wordcounts, threshold=5, add_unknowns=Tru
                     res.append(word2id[token])
                     if token.startswith("#") and len(token) > 1 and token[1:] in word2id:
                         res.append(word2id[token[1:]])
+
     except UnicodeDecodeError:
         return None
     if len(res) > 0:

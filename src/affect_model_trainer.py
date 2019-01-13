@@ -1,7 +1,7 @@
 import word_lstm_sentiment_model
 import data_utils
 import numpy as np
-import cPickle as pickle
+import pickle
 from keras.models import Sequential, Model, load_model
 from keras.layers import Embedding, wrappers, LSTM, Dense, Dropout, Input, Concatenate
 from keras import backend as K, metrics
@@ -21,7 +21,7 @@ def create_feature_extraction_model(word2id_path='resources/sentiment_model_word
         new_model.add(model.layers[i])
         new_model.layers[-1].trainable = False
     new_model.trainable = False
-    print new_model.summary()
+    print(new_model.summary())
 
     return new_model, word2id
 
@@ -109,7 +109,7 @@ def create_prediction_model(sentiment_features_len, lexicon_features_len, num_cl
     prediction_model.compile(loss={"regression_output": "mean_squared_error",
                                    "classification_output": "categorical_crossentropy"}, optimizer='adam',
                              metrics={"regression_output": metrics.mae,
-                                   "classification_output": "accuracy"})
+                                      "classification_output": "accuracy"})
     return prediction_model
 
 
@@ -124,7 +124,7 @@ def pearson_correlation_f(y_true, y_pred):
     # fst shape keeps (batch,10)
 
     devP = K.std(y_pred, axis=0)
-    devT= K.std(y_true, axis=0)
+    devT = K.std(y_true, axis=0)
     # dev shape: (1,10)
 
     return K.sum(K.mean(fsp * fst, axis=0) / (devP * devT))
@@ -158,11 +158,11 @@ def train_model(name, regression_train_data_path, classification_train_data_path
     max_accuracy = 0.0
     early_stop = EarlyStopping(monitor='val_loss', patience=3, verbose=1)
     lexicon_feature_extractor = LexiconFeatureExtractor()
-    print "Preparing Data for {} model ...".format(name)
+    print("Preparing Data for {} model ...".format(name))
     train_x, train_y_labels = data_utils.load_affect_data(classification_train_data_path, is_label_numeric=False)
     train_x2, train_y_scores = data_utils.load_affect_data(regression_train_data_path)
     assert len(train_x) == len(train_x2)
-    for x1, x2 in zip (train_x, train_x2):
+    for x1, x2 in zip(train_x, train_x2):
         if x1 != x2:
             raise Exception("Instances in regression data and classification data are different!")
     train_y_labels = to_categorical(train_y_labels)
@@ -182,8 +182,8 @@ def train_model(name, regression_train_data_path, classification_train_data_path
         lexicon_features_dev = np.array(lexicon_features_dev)
         model = create_prediction_model(len(sentiment_features_train[0]), len(lexicon_features_train[0]),
                                         len(train_y_labels[0]), len(word_index), embedding_matrix=embedding_matrix)
-        print model.summary()
-        print "Start training for {} model ...".format(name)
+        print(model.summary())
+        print("Start training for {} model ...".format(name))
         max_harmonic_mean = 0.0
         while True:
             model.fit(x=[encoded_train_x, sentiment_features_train, lexicon_features_train],
@@ -201,11 +201,11 @@ def train_model(name, regression_train_data_path, classification_train_data_path
                 max_harmonic_mean = harmonic_mean
                 max_pearson = pearson
                 max_accuracy = accuracy
-                print "Max harmonic mean of pearson and accuracy is increased: {} ...".format(max_harmonic_mean)
-                print "Saving {} model ...".format(name)
+                print("Max harmonic mean of pearson and accuracy is increased: {} ...".format(max_harmonic_mean))
+                print("Saving {} model ...".format(name))
                 model.save("resources/saved_models/{}.model".format(name))
-            print "pearson correlation on train set={}".format(pearson)
-            print "classification accuracy on train set={}".format(accuracy)
+            print("pearson correlation on train set={}".format(pearson))
+            print("classification accuracy on train set={}".format(accuracy))
             if harmonic_mean < max_harmonic_mean - epsilon:
                 break
     elif use_lexicon_features and not use_sentiment_features:
@@ -215,8 +215,8 @@ def train_model(name, regression_train_data_path, classification_train_data_path
         lexicon_features_dev = np.array(lexicon_features_dev)
         model = create_prediction_model(0, len(lexicon_features_train[0]),
                                         len(train_y_labels[0]), len(word_index), embedding_matrix=embedding_matrix)
-        print model.summary()
-        print "Start training for {} model ...".format(name)
+        print(model.summary())
+        print("Start training for {} model ...".format(name))
         max_harmonic_mean = 0.0
         while True:
             model.fit(x=[encoded_train_x, lexicon_features_train],
@@ -234,11 +234,11 @@ def train_model(name, regression_train_data_path, classification_train_data_path
                 max_harmonic_mean = harmonic_mean
                 max_pearson = pearson
                 max_accuracy = accuracy
-                print "Max harmonic mean of pearson and accuracy is increased: {} ...".format(max_harmonic_mean)
-                print "Saving {} model ...".format(name)
+                print("Max harmonic mean of pearson and accuracy is increased: {} ...".format(max_harmonic_mean))
+                print("Saving {} model ...".format(name))
                 model.save("resources/saved_models/{}.model".format(name))
-            print "pearson correlation on train set={}".format(pearson)
-            print "classification accuracy on train set={}".format(accuracy)
+            print("pearson correlation on train set={}".format(pearson))
+            print("classification accuracy on train set={}".format(accuracy))
             if harmonic_mean < max_harmonic_mean - epsilon:
                 break
     elif not use_lexicon_features and use_sentiment_features:
@@ -246,8 +246,8 @@ def train_model(name, regression_train_data_path, classification_train_data_path
         sentiment_features_dev = feature_extraction_model.predict(encoded_dev_x)
         model = create_prediction_model(len(sentiment_features_train[0]), 0,
                                         len(train_y_labels[0]), len(word_index), embedding_matrix=embedding_matrix)
-        print model.summary()
-        print "Start training for {} model ...".format(name)
+        print(model.summary())
+        print("Start training for {} model ...".format(name))
         max_harmonic_mean = 0.0
         while True:
             model.fit(x=[encoded_train_x, sentiment_features_train],
@@ -265,18 +265,18 @@ def train_model(name, regression_train_data_path, classification_train_data_path
                 max_harmonic_mean = harmonic_mean
                 max_pearson = pearson
                 max_accuracy = accuracy
-                print "Max harmonic mean of pearson and accuracy is increased: {} ...".format(max_harmonic_mean)
-                print "Saving {} model ...".format(name)
+                print("Max harmonic mean of pearson and accuracy is increased: {} ...".format(max_harmonic_mean))
+                print("Saving {} model ...".format(name))
                 model.save("resources/saved_models/{}.model".format(name))
-            print "pearson correlation on train set={}".format(pearson)
-            print "classification accuracy on train set={}".format(accuracy)
+            print("pearson correlation on train set={}".format(pearson))
+            print("classification accuracy on train set={}".format(accuracy))
             if harmonic_mean < max_harmonic_mean - epsilon:
                 break
     else:
         model = create_prediction_model(0, 0,
                                         len(train_y_labels[0]), len(word_index), embedding_matrix=embedding_matrix)
-        print model.summary()
-        print "Start training for {} model ...".format(name)
+        print(model.summary())
+        print("Start training for {} model ...".format(name))
         max_harmonic_mean = 0.0
         while True:
             model.fit(x=encoded_train_x,
@@ -294,11 +294,11 @@ def train_model(name, regression_train_data_path, classification_train_data_path
                 max_harmonic_mean = harmonic_mean
                 max_pearson = pearson
                 max_accuracy = accuracy
-                print "Max harmonic mean of pearson and accuracy is increased: {} ...".format(max_harmonic_mean)
-                print "Saving {} model ...".format(name)
+                print("Max harmonic mean of pearson and accuracy is increased: {} ...".format(max_harmonic_mean))
+                print("Saving {} model ...".format(name))
                 model.save("resources/saved_models/{}.model".format(name))
-            print "pearson correlation on train set={}".format(pearson)
-            print "classification accuracy on train set={}".format(accuracy)
+            print("pearson correlation on train set={}".format(pearson))
+            print("classification accuracy on train set={}".format(accuracy))
             if harmonic_mean < max_harmonic_mean - epsilon:
                 break
     return max_pearson, max_accuracy
@@ -306,47 +306,53 @@ def train_model(name, regression_train_data_path, classification_train_data_path
 
 def load_models(model_names):
     feature_extraction_model, word_index = create_feature_extraction_model()
-    prdiction_models = [load_model("resources/saved_models/{}_en_sentiment_lexicon.model".format(model_name)) for model_name in model_names]
+    prdiction_models = [load_model("resources/saved_models/{}_en_sentiment_lexicon.model".format(model_name)) for
+                        model_name in model_names]
     return feature_extraction_model, word_index, prdiction_models
 
 
 def train_models(model_names):
     with open("results.txt", "w") as f:
-        print "Creating Feature Extraction model"
+        print("Creating Feature Extraction model")
         feature_extraction_model, word_index = create_feature_extraction_model()
         for model_name in model_names:
-            pearson, accuracy = train_model("{}_en_sentiment_lexicon".format(model_name), "data/semeval2018 task 1/EI-reg-En-{}-train.txt".format(model_name),
-                                        "data/semeval2018 task 1/EI-oc-En-{}-train.txt".format(model_name),
-                                        "data/semeval2018 task 1/2018-EI-reg-En-{}-dev.txt".format(model_name),
-                                        "data/semeval2018 task 1/2018-EI-oc-En-{}-dev.txt".format(model_name),
-                                        word_index, use_sentiment_features=True, use_lexicon_features=True,
-                                        feature_extraction_model=feature_extraction_model)
+            pearson, accuracy = train_model("{}_en_sentiment_lexicon".format(model_name),
+                                            "data/semeval2018 task 1/EI-reg-En-{}-train.txt".format(model_name),
+                                            "data/semeval2018 task 1/EI-oc-En-{}-train.txt".format(model_name),
+                                            "data/semeval2018 task 1/2018-EI-reg-En-{}-dev.txt".format(model_name),
+                                            "data/semeval2018 task 1/2018-EI-oc-En-{}-dev.txt".format(model_name),
+                                            word_index, use_sentiment_features=True, use_lexicon_features=True,
+                                            feature_extraction_model=feature_extraction_model)
             f.write("Model:{}_en_sentiment_lexicon\tPearson:{}\tAccuracy:{}\n".format(model_name, pearson, accuracy))
             f.flush()
-            pearson, accuracy = train_model("{}_en_sentiment".format(model_name), "data/semeval2018 task 1/EI-reg-En-{}-train.txt".format(model_name),
-                                        "data/semeval2018 task 1/EI-oc-En-{}-train.txt".format(model_name),
-                                        "data/semeval2018 task 1/2018-EI-reg-En-{}-dev.txt".format(model_name),
-                                        "data/semeval2018 task 1/2018-EI-oc-En-{}-dev.txt".format(model_name),
-                                        word_index, use_sentiment_features=True, use_lexicon_features=False,
-                                        feature_extraction_model=feature_extraction_model)
+            pearson, accuracy = train_model("{}_en_sentiment".format(model_name),
+                                            "data/semeval2018 task 1/EI-reg-En-{}-train.txt".format(model_name),
+                                            "data/semeval2018 task 1/EI-oc-En-{}-train.txt".format(model_name),
+                                            "data/semeval2018 task 1/2018-EI-reg-En-{}-dev.txt".format(model_name),
+                                            "data/semeval2018 task 1/2018-EI-oc-En-{}-dev.txt".format(model_name),
+                                            word_index, use_sentiment_features=True, use_lexicon_features=False,
+                                            feature_extraction_model=feature_extraction_model)
             f.write("Model:{}_en_sentiment\tPearson:{}\tAccuracy:{}\n".format(model_name, pearson, accuracy))
             f.flush()
-            pearson, accuracy = train_model("{}_en_lexicon".format(model_name), "data/semeval2018 task 1/EI-reg-En-{}-train.txt".format(model_name),
-                                        "data/semeval2018 task 1/EI-oc-En-{}-train.txt".format(model_name),
-                                        "data/semeval2018 task 1/2018-EI-reg-En-{}-dev.txt".format(model_name),
-                                        "data/semeval2018 task 1/2018-EI-oc-En-{}-dev.txt".format(model_name),
-                                        word_index, use_sentiment_features=False, use_lexicon_features=True,
-                                        feature_extraction_model=feature_extraction_model)
+            pearson, accuracy = train_model("{}_en_lexicon".format(model_name),
+                                            "data/semeval2018 task 1/EI-reg-En-{}-train.txt".format(model_name),
+                                            "data/semeval2018 task 1/EI-oc-En-{}-train.txt".format(model_name),
+                                            "data/semeval2018 task 1/2018-EI-reg-En-{}-dev.txt".format(model_name),
+                                            "data/semeval2018 task 1/2018-EI-oc-En-{}-dev.txt".format(model_name),
+                                            word_index, use_sentiment_features=False, use_lexicon_features=True,
+                                            feature_extraction_model=feature_extraction_model)
             f.write("Model:{}_en_lexicon\tPearson:{}\tAccuracy:{}\n".format(model_name, pearson, accuracy))
             f.flush()
-            pearson, accuracy = train_model("{}_en".format(model_name), "data/semeval2018 task 1/EI-reg-En-{}-train.txt".format(model_name),
-                                        "data/semeval2018 task 1/EI-oc-En-{}-train.txt".format(model_name),
-                                        "data/semeval2018 task 1/2018-EI-reg-En-{}-dev.txt".format(model_name),
-                                        "data/semeval2018 task 1/2018-EI-oc-En-{}-dev.txt".format(model_name),
-                                        word_index, use_sentiment_features=False, use_lexicon_features=False,
-                                        feature_extraction_model=feature_extraction_model)
+            pearson, accuracy = train_model("{}_en".format(model_name),
+                                            "data/semeval2018 task 1/EI-reg-En-{}-train.txt".format(model_name),
+                                            "data/semeval2018 task 1/EI-oc-En-{}-train.txt".format(model_name),
+                                            "data/semeval2018 task 1/2018-EI-reg-En-{}-dev.txt".format(model_name),
+                                            "data/semeval2018 task 1/2018-EI-oc-En-{}-dev.txt".format(model_name),
+                                            word_index, use_sentiment_features=False, use_lexicon_features=False,
+                                            feature_extraction_model=feature_extraction_model)
             f.write("Model:{}_en\tPearson:{}\tAccuracy:{}\n\n".format(model_name, pearson, accuracy))
             f.flush()
+
 
 if __name__ == "__main__":
     model_names = ["joy"]
