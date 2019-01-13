@@ -11,27 +11,33 @@
     <title>Tweetlerde Duygulanım Yoğunluğu</title>
     <style>
         .vertical {
-          box-shadow: inset 0px 4px 6px #ccc;
+            box-shadow: inset 0px 4px 6px #ccc;
         }
-        .progress{
+
+        .progress {
             height: 40%;
         }
+
         .progress-bar {
-          box-shadow: inset 0px 4px 6px rgba(100,100,100,0.6);
+            box-shadow: inset 0px 4px 6px rgba(100, 100, 100, 0.6);
         }
+
         .progress-bar-info {
             background-color: #0ff;
 
         }
+
         .progress-bar-warning {
             background-color: #f0f;
 
         }
+
         .progress-bar-danger {
             background-color: #f00;
 
         }
-        .no-emo{
+
+        .no-emo {
             text-align: center;
             background-color: #fff;
             padding: 5%;
@@ -39,7 +45,8 @@
             border: #bbb;
             border-style: solid;
         }
-        .low-emo{
+
+        .low-emo {
             text-align: center;
             background-color: #0ff;
             padding: 5%;
@@ -47,7 +54,8 @@
             border: #0ff;
             border-style: solid;
         }
-        .mid-emo{
+
+        .mid-emo {
             text-align: center;
             background-color: #f0f;
             padding: 5%;
@@ -55,7 +63,8 @@
             border: #f0f;
             border-style: solid;
         }
-        .high-emo{
+
+        .high-emo {
             text-align: center;
             background-color: #f00;
             padding: 5%;
@@ -63,7 +72,8 @@
             border: #f00;
             border-style: solid;
         }
-        .emoticon{
+
+        .emoticon {
 
         }
     </style>
@@ -71,7 +81,7 @@
 <body>
 {% import math %}
 <div class="jumbotron text-center">
-  <h1>Tweetlerde Duygulanım Yoğunluğu Ölçümü</h1>
+    <h1>Tweetlerde Duygulanım Yoğunluğu Ölçümü</h1>
     <p>İstanbul Teknik Üniversitesi</p>
     <p>2017/2018 Güz dönemi - Veri Madenciliği dersi Dönem projesi</p>
 </div>
@@ -79,40 +89,43 @@
 <div class="container">
     <form action="/measure">
         <div class="form-group">
-          <label for="tweet">Bir Tweet yazınız:</label>
+            <label for="tweet">Bir Tweet yazınız:</label>
             {% try %}
-                {% if tweet %}
-                    <input type="text" class="form-control" id="tweet" name="tweet" value="{{tweet}}">
-                {% end %}
+            {% if tweet %}
+            <input type="text" class="form-control" id="tweet" name="tweet" value="{{tweet}}">
+            {% end %}
             {% except %}
-                <input type="text" class="form-control" id="tweet" name="tweet">
+            <input type="text" class="form-control" id="tweet" name="tweet">
             {% end %}
         </div>
         <button type="submit" class="btn btn-default">Analiz et</button>
     </form>
 
     {% try %}
-      {% if results %}
+    {% if results %}
     <div style="padding-top: 30px">
         <div class="row">
-            {% for emotion, (reg_result, classification_result) in results.iteritems() %}
+            {% for emotion, (reg_result, classification_result) in results.items() %}
+
             <div class="col-sm" style="text-align: center">
                 <img class="emoticon" src="img/{{emotion}}.jpg" style="opacity:{{ 0.75 + (reg_result / 400.0) }};"/>
-              <h3 style="text-align: center"> {{emotion}} </h3>
-                <p class="{{ class_dic[classification_result] }}"><b>{{classification_result}}</b> </p>
+                <h3 style="text-align: center"> {{emotion}} </h3>
                 <div class="progress vertical">
                     {% if reg_result < 35 %}
-                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{reg_result}}" aria-valuemin="0" aria-valuemax="100" style="width: {{reg_result}}%;">
-                            <p>%{{reg_result}}</p>
-                        </div>
+                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{reg_result}}"
+                         aria-valuemin="0" aria-valuemax="100" style="width: {{reg_result}}%;">
+                        <p>%{{reg_result}}</p>
+                    </div>
                     {% elif reg_result < 60 %}
-                        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{reg_result}}" aria-valuemin="0" aria-valuemax="100" style="width: {{reg_result}}%;">
-                            <p>%{{reg_result}}</p>
-                        </div>
-                    {% else  %}
-                        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{reg_result}}" aria-valuemin="0" aria-valuemax="100" style="width: {{reg_result}}%;">
-                            <p>%{{reg_result}}</p>
-                        </div>
+                    <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{reg_result}}"
+                         aria-valuemin="0" aria-valuemax="100" style="width: {{reg_result}}%;">
+                        <p>%{{reg_result}}</p>
+                    </div>
+                    {% else %}
+                    <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{reg_result}}"
+                         aria-valuemin="0" aria-valuemax="100" style="width: {{reg_result}}%;">
+                        <p>%{{reg_result}}</p>
+                    </div>
                     {% end %}
                 </div>
                 <p style="text-align: center"><b>Yoğunluk: </b> 0.{{reg_result}} </p>
@@ -120,8 +133,9 @@
             {% end %}
         </div>
     </div>
-      {% end %}
-    {% except %}
+    {% end %}
+    {% except Exception as e%}
+    {{e}}
     {% end %}
 
 
