@@ -1,8 +1,7 @@
-numpy 1.13.1
-gensim 3.0.0
-scipy 0.19.1
-nltk 3.2.4
-tensorflow 1.2.1
-keras 2.0.6
-pandas 0.20.3
-math
+numpy=1.13.1
+gensim==3.0.0
+scipy==0.19.1
+nltk==3.2.4
+tensorflow==1.2.1
+keras==2.0.6
+tornado==4.5.1
